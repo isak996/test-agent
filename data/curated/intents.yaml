@@ -1,0 +1,38 @@
+domains: [MEDIA, NAV, HVAC, HEALTH, CAR_FAQ, IMAGE_GEN, GAMES, SMALLTALK]
+intents:
+  - id: 播放_音乐
+    domain: MEDIA
+    templates: ["播放{artist}的歌","来点{genre}音乐","切到{mood}风格"]
+    min_base: 3
+  - id: 导航_POI
+    domain: NAV
+    templates: ["带我去{city}{poi}","去{city}的{poi}","导航到{poi}"]
+    min_base: 3
+  - id: 车控_空调_开启
+    domain: HVAC
+    templates: ["开下空调","把空调打开","空调启动"]
+    min_base: 3
+  - id: 车控_空调_设定温度
+    domain: HVAC
+    templates: ["把温度调到{temp}度","设定温度为{temp}度"]
+    min_base: 3
+  - id: 健康_咨询_一般问答
+    domain: HEALTH
+    templates: ["最近{symptom}怎么办","{disease}有哪些常见表现","减肥能不能吃{food}"]
+    min_base: 3
+  - id: 用车_FAQ
+    domain: CAR_FAQ
+    templates: ["{feature}怎么用","车机的{feature}老连不上怎么办","如何查看胎压"]
+    min_base: 3
+slots:
+  artist: [周杰伦, 林俊杰, 王菲, 薛之谦]
+  genre: [民谣, 摇滚, R&B, 电子]
+  mood: [轻松, 安静, 热血]
+  poi: [医院, 加油站, 停车场, 咖啡店, 便利店]
+  city: [北京, 上海, 广州, 深圳, 杭州, 苏州]
+  temp: [18, 22, 26]
+  symptom: [头晕, 失眠, 咳嗽]
+  disease: [焦虑症, 过敏, 胃炎]
+  food: [猪肉, 面包, 咖啡]
+  feature: [蓝牙, 语音唤醒, 导航, 空调]
+constraints: {max_length: 120}

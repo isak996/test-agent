@@ -1,0 +1,58 @@
+llm:
+  provider: deepseek        # 可选: deepseek | doubao
+  model: deepseek-chat
+  temperature: 0.7
+  max_tokens: 1024
+
+design_targets:
+  base_min: 5               # 每个意图至少生成多少标准表达
+  syn_min: 5                # 每个意图至少生成多少同义表达
+  tag_ratio:                # 覆盖目标（比例）
+    NOISE: 0.20
+    DIALECT: 0.10
+    TYPO: 0.10
+    CTX: 0.15
+    DISAMBIG: 0.05
+    LONG: 0.05
+    COMPOSED: 0.05
+    OUT_OF_SCOPE: 0.05
+    SAFETY: 0.05
+
+constraints:
+  max_query_len: 120
+
+storage:
+  output_format: parquet            # 可选: parquet | csv
+  output_dir: data/generated        # 所有测试集 & 报告输出目录
+  db_url: sqlite:///data/testcases.db  # SQLite 存储（可换成 Postgres）
+
+observability:
+  enable: true
+  provider: langsmith               # 可接 LangSmith/Logs/自定义
+  log_level: INFO
+
+augment:
+  typo_per_base: 2        # 每条 BASE 造 2 条常见错写
+  slang_per_base: 1       # 口语填词
+  dialect_per_base: 1     # 方言/夹杂表达
+  noise_per_base: 2       # 噪声词（嗯/然后…等）
+  ctx_per_intent: 3       # 每个意图造 3 条多轮/消歧
+  safety_min: 20          # 至少产出 20 条安全/拒答类
+
+generation:
+  total: 128
+  alloc:
+    BASE: 0.2
+    SYN: 0.2
+    NOISE: 0.1
+    SLANG: 0.1
+    DIALECT: 0.1
+    TYPO: 0.1
+    CTX: 0.1
+    SAFETY: 0.1
+
+taxonomy:
+  min_domains: 4          # 解析出来的最小域数
+  max_domains: 10          # 解析出来的最大域数
+  intents_per_domain: 8
+

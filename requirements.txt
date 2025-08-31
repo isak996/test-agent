@@ -1,0 +1,10 @@
+pandas
+pyarrow
+fastparquet
+numpy
+pydantic
+tqdm
+rich
+requests
+langchain-core
+langchain-community

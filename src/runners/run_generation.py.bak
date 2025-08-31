@@ -1,0 +1,51 @@
+
+import argparse, os, json
+import pandas as pd
+from ..chains.design_chain import generate_from_inventory
+from ..schemas.inventory import load_inventory_yaml
+
+def main():
+    p = argparse.ArgumentParser()
+    p.add_argument('--config', required=True)
+    p.add_argument('--intents', required=True)
+    p.add_argument('--out', required=True)
+    p.add_argument('--use-llm', action='store_true', help='Enable LLM-based generation')
+    args = p.parse_args()
+
+    import yaml
+    cfg = yaml.safe_load(open(args.config, 'r', encoding='utf-8'))
+    inv = load_inventory_yaml(args.intents)
+
+    # basic generation
+    cases = generate_from_inventory(inv, cfg['design_targets']['base_min'],
+                                    cfg['design_targets']['syn_min'],
+                                    cfg['constraints']['max_query_len'])
+
+    if args.use-llm:
+        from ..chains import llm_generators as LG
+        enriched = []
+        for intent in inv['intents']:
+            enriched += LG.gen_base_syn(intent['id'], intent.get('domain',''),
+                                        intent.get('templates', []), inv.get('slots', {}))
+            for r in enriched:
+                q = r.get('query')
+                if not q: continue
+                noise = LG.gen_noise(q)
+                ctx = LG.gen_ctx(intent['id'], q)
+                if isinstance(ctx, list):
+                    enriched += ctx
+                if isinstance(noise, dict):
+                    for arr in noise.values():
+                        for nq in arr:
+                            enriched.append({"query":nq,"intent":intent['id'],"type":"NOISE"})
+        enriched += LG.gen_safety()
+        cases.extend(enriched)
+
+    os.makedirs(os.path.dirname(args.out), exist_ok=True)
+    df = pd.DataFrame(cases)
+    df.to_parquet(args.out, index=False)
+    df.to_csv(args.out.replace('.parquet','.csv'), index=False, encoding='utf-8-sig')
+    print(json.dumps({"saved":args.out, "total":len(df)}, ensure_ascii=False))
+
+if __name__=='__main__':
+    main()
