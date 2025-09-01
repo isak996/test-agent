@@ -6,8 +6,13 @@ import streamlit as st
 
 # 让 Python 能找到你的 src 包（假设 webapp/ 与 src/ 同级）
 ROOT = pathlib.Path(__file__).resolve().parents[1]
+# 确保项目根目录在 sys.path 中
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
+# 确保 src 目录在 sys.path 中
+SRC_DIR = ROOT / "src"
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
 
 # ——严格使用项目里的实现，不做页面级兜底/重试——
 from src.chains.description_parser import parse_domains_intents
