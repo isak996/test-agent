@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual environment
+virtualenv/
+virtual-env/
+virtualenv-2.7/
+venv/
+.venv/
+
+# IDEs
+.idea/
+.vscode/
+
+# OS generated files
+.DS_Store
+
+# Webapp generated files
+webapp/app1.py
