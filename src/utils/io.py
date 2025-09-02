@@ -25,6 +25,34 @@ def load_cases(path):
     p=str(path)
     return pd.read_parquet(p) if p.endswith('.parquet') else pd.read_csv(p)
 
+import sqlite3
+
+def init_db(db_path):
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS generated_cases (
+            case_id TEXT PRIMARY KEY,
+            query TEXT,
+            test_type TEXT,
+            expected_intent TEXT,
+            domain TEXT,
+            difficulty INTEGER,
+            design_logic TEXT,
+            tags TEXT,
+            context TEXT,
+            group_id TEXT,
+            step TEXT
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+def save_to_db(df, db_path):
+    conn = sqlite3.connect(db_path)
+    df.to_sql('generated_cases', conn, if_exists='append', index=False)
+    conn.close()
+
 def rand_id(prefix):
     return f"{prefix}-{uuid.uuid4().hex[:8]}"
 
